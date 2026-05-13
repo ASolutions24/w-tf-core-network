@@ -1,0 +1,7 @@
+variable "spoke_rg" {}
+variable "spoke_vnet_name" {}
+variable "spoke_vnet_id" {}
+
+variable "hub_rg" {}
+variable "hub_vnet_name" {}
+variable "hub_vnet_id" {}
