@@ -5,7 +5,7 @@ data "azurerm_firewall" "fw" {
 }
 
 module "firewall_rules" {
-  source = "../../../modules/firewall-policy"
-  firewall_policy_id = data.azurerm_firewall.fw.firewall_policy_id
+  source                   = "../../../modules/firewall-policy"
+  firewall_policy_id       = data.azurerm_firewall.fw.firewall_policy_id
   network_rule_collections = var.network_rule_collections
 }

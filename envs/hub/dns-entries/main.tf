@@ -2,9 +2,9 @@ locals {
   records_flat = flatten([
     for zone_key, zone in var.dns_records : [
       for record in zone.records : {
-        key     = "${zone_key}-${record.name}"
-        zone    = zone
-        record  = record
+        key    = "${zone_key}-${record.name}"
+        zone   = zone
+        record = record
       }
     ]
   ])

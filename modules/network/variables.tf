@@ -1,7 +1,7 @@
 variable "vnets" {
   type = map(object({
-    address_space = list(string)
-    location      = string
+    address_space       = list(string)
+    location            = string
     resource_group_name = string
     subnets = map(object({
       address_prefixes = list(string)

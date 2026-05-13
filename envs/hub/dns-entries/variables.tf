@@ -4,12 +4,12 @@ variable "dns_records" {
     resource_group_name = string
 
     records = list(object({
-      name    = string
-      type    = string # A, CNAME
-      ttl     = number
-      values  = list(string)
+      name   = string
+      type   = string # A, CNAME
+      ttl    = number
+      values = list(string)
     }))
   }))
 }
 
-variable "hub_subscription_id"{}
+variable "hub_subscription_id" {}

@@ -24,7 +24,7 @@ resource "azurerm_firewall" "fw" {
 }
 
 resource "azurerm_firewall_policy" "fw_policy" {
-  name = "policy-${var.name}"
-  location = var.location
+  name                = "policy-${var.name}"
+  location            = var.location
   resource_group_name = var.resource_group_name
 }

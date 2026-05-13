@@ -25,7 +25,7 @@ module "security" {
   providers = {
     azurerm = azurerm.hub
   }
-  source  = "../../../modules/network-security"
+  source = "../../../modules/network-security"
   #subnets = module.hub_core.subnets
   subnets = {
     for k, v in module.hub_core.subnets :
@@ -38,7 +38,7 @@ module "routing" {
   providers = {
     azurerm = azurerm.hub
   }
-  source  = "../../../modules/network-routing"
+  source = "../../../modules/network-routing"
   #subnets = module.hub_core.subnets
   subnets = {
     for k, v in module.hub_core.subnets :
@@ -53,7 +53,7 @@ module "association" {
     azurerm = azurerm.hub
   }
 
-  subnet_ids = module.hub_core.subnet_ids
+  subnet_ids      = module.hub_core.subnet_ids
   nsg_ids         = module.security.nsg_ids
   route_table_ids = module.routing.route_table_ids
 }

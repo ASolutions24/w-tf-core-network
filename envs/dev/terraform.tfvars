@@ -1,14 +1,14 @@
 location = "australiaeast"
 
 # HUB
-hub_vnet_name            = "vnet-hub" #Not required for peering if reading from hub network state file
-hub_rg_name              = "rg-network-hub" #Not required for peering if reading from hub network state file
-hub_subscription_id      = "39aca73e-1d25-4edf-84d5-ebe0397a816b"
+hub_vnet_name       = "vnet-hub"       #Not required for peering if reading from hub network state file
+hub_rg_name         = "rg-network-hub" #Not required for peering if reading from hub network state file
+hub_subscription_id = "39aca73e-1d25-4edf-84d5-ebe0397a816b"
 
 # SPOKE
-spoke_vnet_name          = "vnet-tf-dev"
-spoke_vnet_cidr          = "10.0.1.0/24"
-spoke_rg_name            = "rg-network-dev"
+spoke_vnet_name = "vnet-tf-dev"
+spoke_vnet_cidr = "10.0.1.0/24"
+spoke_rg_name   = "rg-network-dev"
 #spoke_subnet_name        = "sn-dev-vm"
 #spoke_subnet_cidr        = "10.0.1.0/27"
 spoke_subnets = {
@@ -20,7 +20,7 @@ spoke_subnets = {
   }
 }
 
-spoke_subscription_id    = "1cec5258-8248-4460-80f9-0731a12caadf"
+spoke_subscription_id = "1cec5258-8248-4460-80f9-0731a12caadf"
 
 # ROUTING
 #route_table_name         = "rt-dev-vm"

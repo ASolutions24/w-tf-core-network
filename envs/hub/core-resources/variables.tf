@@ -13,7 +13,7 @@ variable "hub_subnets" {
     address_prefixes = list(string)
   }))
 }
-variable "hub_subscription_id"{}
+variable "hub_subscription_id" {}
 
 
 # FIREWALL

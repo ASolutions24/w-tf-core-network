@@ -20,10 +20,10 @@ output "subnet_ids" {
 output "subnets" {
   value = {
     for k, subnet in azurerm_subnet.subnet : k => {
-      subnet_name      = subnet.name
-      location         = azurerm_virtual_network.vnet.location
-      resource_group   = azurerm_virtual_network.vnet.resource_group_name
-      id               = subnet.id
+      subnet_name    = subnet.name
+      location       = azurerm_virtual_network.vnet.location
+      resource_group = azurerm_virtual_network.vnet.resource_group_name
+      id             = subnet.id
     }
   }
 }

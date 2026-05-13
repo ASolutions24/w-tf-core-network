@@ -20,4 +20,4 @@ variable "rules" {
   })))
 }
 
-variable "hub_subscription_id"{}
+variable "hub_subscription_id" {}

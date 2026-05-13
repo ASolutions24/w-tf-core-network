@@ -21,4 +21,4 @@ rules = {
   ]
 }
 
-hub_subscription_id      = "39aca73e-1d25-4edf-84d5-ebe0397a816b"
+hub_subscription_id = "39aca73e-1d25-4edf-84d5-ebe0397a816b"

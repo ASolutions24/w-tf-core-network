@@ -1,9 +1,9 @@
 location = "australiaeast"
 
 # HUB
-hub_vnet_name            = "vnet-hub"
-hub_vnet_cidr            = "10.100.0.0/16"
-hub_rg_name              = "rg-network-hub"
+hub_vnet_name = "vnet-hub"
+hub_vnet_cidr = "10.100.0.0/16"
+hub_rg_name   = "rg-network-hub"
 #hub_firewall_subnet_cidr = "10.100.1.0/24"
 hub_subnets = {
   AzureFirewallSubnet = {
@@ -26,11 +26,11 @@ hub_subnets = {
     address_prefixes = ["10.100.4.16/28"]
   }
 }
-hub_subscription_id      = "39aca73e-1d25-4edf-84d5-ebe0397a816b"
+hub_subscription_id = "39aca73e-1d25-4edf-84d5-ebe0397a816b"
 
 # FIREWALL
-firewall_name            = "azfw-hub"
-firewall_pip_name        = "azfw-hub-pip"
+firewall_name     = "azfw-hub"
+firewall_pip_name = "azfw-hub-pip"
 
 # Privare DNS Zones
 private_dns_zones = {

@@ -1,6 +1,6 @@
 
 # HUB
-variable "hub_subscription_id"{}
+variable "hub_subscription_id" {}
 
 # FIREWALL
 variable "firewall_name" {}

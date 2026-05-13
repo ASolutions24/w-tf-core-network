@@ -50,7 +50,7 @@ module "routing" {
 module "association" {
   source = "../../modules/network-association"
 
-  subnet_ids = module.spoke_core.subnet_ids
+  subnet_ids      = module.spoke_core.subnet_ids
   nsg_ids         = module.security.nsg_ids
   route_table_ids = module.routing.route_table_ids
 }
@@ -71,7 +71,7 @@ module "peering" {
 
   spoke_rg        = var.spoke_rg_name
   spoke_vnet_name = var.spoke_vnet_name
-  spoke_vnet_id = module.spoke_core.vnet_id
+  spoke_vnet_id   = module.spoke_core.vnet_id
 
   hub_rg        = var.hub_rg_name
   hub_vnet_name = var.hub_vnet_name

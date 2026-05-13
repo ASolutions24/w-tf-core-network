@@ -12,10 +12,10 @@ hub_subscription_id      = "39aca73e-1d25-4edf-84d5-ebe0397a816b"
 firewall_name            = "azfw-hub"
 firewall_pip_name        = "azfw-hub-pip"
 */
-hub_subscription_id      = "39aca73e-1d25-4edf-84d5-ebe0397a816b"
+hub_subscription_id = "39aca73e-1d25-4edf-84d5-ebe0397a816b"
 
-firewall_name            = "azfw-hub"
-firewall_rg_name         = "rg-network-hub"
+firewall_name    = "azfw-hub"
+firewall_rg_name = "rg-network-hub"
 
 network_rule_collections = [
   {

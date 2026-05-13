@@ -39,7 +39,7 @@ module "security" {
   providers = {
     azurerm = azurerm.spoke
   }
-  source  = "../../modules/network-security"
+  source = "../../modules/network-security"
   #subnets = module.hub_core.subnets
   subnets = {
     for k, v in module.spoke_core.subnets :
@@ -52,7 +52,7 @@ module "routing" {
   providers = {
     azurerm = azurerm.spoke
   }
-  source  = "../../modules/network-routing"
+  source = "../../modules/network-routing"
   #subnets = module.hub_core.subnets
   subnets = {
     for k, v in module.spoke_core.subnets :
@@ -64,7 +64,7 @@ module "routing" {
 module "association" {
   source = "../../modules/network-association"
 
-  subnet_ids = module.spoke_core.subnet_ids
+  subnet_ids      = module.spoke_core.subnet_ids
   nsg_ids         = module.security.nsg_ids
   route_table_ids = module.routing.route_table_ids
 }
@@ -79,10 +79,10 @@ module "peering" {
 
   spoke_rg        = var.spoke_rg_name
   spoke_vnet_name = var.spoke_vnet_name
-  spoke_vnet_id = module.spoke_core.vnet_id
+  spoke_vnet_id   = module.spoke_core.vnet_id
 
-  hub_rg        = var.hub_rg_name #Use this if using api to read real hub vnet resource
-  hub_vnet_name = var.hub_vnet_name #Use this if using api to read real hub vnet resource
+  hub_rg        = var.hub_rg_name                     #Use this if using api to read real hub vnet resource
+  hub_vnet_name = var.hub_vnet_name                   #Use this if using api to read real hub vnet resource
   hub_vnet_id   = data.azurerm_virtual_network.hub.id #Use this if using api to read real hub vnet resource
 
   /*
@@ -170,8 +170,8 @@ module "storage_pe" {
 
   #private_connection_resource_id = each.value.resource_id
   private_connection_resource_id = local.resource_ids[
-      each.value.target_resource_key
-    ]
+    each.value.target_resource_key
+  ]
 
   subresource_names = each.value.subresource_names
 
@@ -182,7 +182,7 @@ module "storage_pe" {
   ]
 }
 
-data "azurerm_log_analytics_workspace" la_hub {
+data "azurerm_log_analytics_workspace" "la_hub" {
   provider            = azurerm.hub
   name                = var.hub_workspace_name
   resource_group_name = var.hub_workspace_rg

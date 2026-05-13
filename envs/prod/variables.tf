@@ -4,8 +4,8 @@ variable "location" {
 
 # HUB
 variable "hub_vnet_name" {} #Not required for peering if reading from hub network state file
-variable "hub_rg_name" {} #Not required for peering if reading from hub network state file
-variable "hub_subscription_id"{}
+variable "hub_rg_name" {}   #Not required for peering if reading from hub network state file
+variable "hub_subscription_id" {}
 
 # SPOKE
 variable "spoke_vnet_name" {}

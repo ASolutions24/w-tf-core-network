@@ -1,6 +1,6 @@
 module "nsg_rules" {
   source = "../../../modules/nsg-rules"
 
-  nsgs = var.nsgs
+  nsgs  = var.nsgs
   rules = var.rules
 }
