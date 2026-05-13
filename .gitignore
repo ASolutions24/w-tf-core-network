@@ -1,0 +1,19 @@
+# Terraform cache/providers
+**/.terraform/*
+
+# State files
+*.tfstate
+*.tfstate.*
+
+# Plan files
+*.tfplan
+
+# Crash logs
+crash.log
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
