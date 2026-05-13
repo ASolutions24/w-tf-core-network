@@ -1,0 +1,97 @@
+# yaml-language-server: $schema=https://www.schemastore.org/any.json
+
+name: Terraform CI
+
+on:
+    push:
+        branches:
+            - main
+
+    pull_request:
+        branches:
+            - main
+
+permissions:
+    contents: write
+
+env:
+    TERRAFORM_VERSION: 1.6.6
+
+jobs:
+    terraform-validation:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout Repository
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Setup Terraform
+              uses: hashicorp/setup-terraform@v3
+              with:
+                  terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+            - name: Terraform Version
+              run: terraform version
+
+            #########################################################
+            # TERRAFORM FORMAT CHECK
+            #########################################################
+
+            - name: Terraform Format Check
+              run: terraform fmt -check -recursive
+
+            #########################################################
+            # HUB VALIDATION
+            #########################################################
+
+            - name: Terraform Init (Hub Core)
+              working-directory: envs/hub/core-resources
+              run: terraform init -backend=false
+
+            - name: Terraform Validate (Hub Core)
+              working-directory: envs/hub/core-resources
+              run: terraform validate
+
+            #########################################################
+            # HUB MONITORING VALIDATION
+            #########################################################
+
+            - name: Terraform Init (Hub Monitoring)
+              working-directory: envs/hub/monitoring
+              run: terraform init -backend=false
+
+            - name: Terraform Validate (Hub Monitoring)
+              working-directory: envs/hub/monitoring
+              run: terraform validate
+
+            #########################################################
+            # DEV VALIDATION
+            #########################################################
+
+            - name: Terraform Init (Dev)
+              working-directory: envs/dev
+              run: terraform init -backend=false
+
+            - name: Terraform Validate (Dev)
+              working-directory: envs/dev
+              run: terraform validate
+
+            #########################################################
+            # AUTO TAGGING
+            #########################################################
+
+            - name: Create Git Tag
+              if: github.event_name == 'push'
+              run: |
+
+                  VERSION="v$(date +'%Y.%m.%d').${{ github.run_number }}"
+
+                  echo "Creating tag: $VERSION"
+
+                  git config user.email "github-actions@github.com"
+                  git config user.name "GitHub Actions"
+
+                  git tag $VERSION
+                  git push origin $VERSION
