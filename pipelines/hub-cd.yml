@@ -1,0 +1,219 @@
+name: hub-$(Date:yyyyMMdd)$(Rev:.r)
+
+trigger: none
+
+parameters:
+- name: action
+  displayName: "Select Action"
+  type: string
+  default: core_resources
+  values:
+  - core_resources
+  - firewall_rules
+  - nsg_rules
+  - dns_entries
+
+- name: plan_only
+  displayName: "Plan Only"
+  type: boolean
+  default: true
+
+- name: variableGroup
+  displayName: "Variable Group"
+  type: string
+  default: "vg-dev"
+
+variables:
+- group: ${{ parameters.variableGroup }} # your variable group
+- name: workingDir
+  ${{ if eq(parameters.action, 'core_resources') }}:
+    value: envs/hub/core-resources
+  ${{ if eq(parameters.action, 'firewall_rules') }}:
+    value: envs/hub/firewall-rules
+  ${{ if eq(parameters.action, 'nsg_rules') }}:
+    value: envs/hub/nsg-rules
+  ${{ if eq(parameters.action, 'dns_entries') }}:
+    value: envs/hub/dns-entries
+
+stages:
+
+# ========================
+# 🔹 Provision Hub Core
+# ========================
+- stage: Deploy_Hub_Core_Resources
+  condition: eq('${{ parameters.action }}', 'core_resources')
+  jobs:
+  - job: Deploy_Hub_Core_Resources
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+    - checkout: self
+
+    - task: TerraformInstaller@1
+      displayName: Install Terraform
+      inputs:
+        terraformVersion: '1.6.6'
+
+    - script: terraform init -reconfigure
+      workingDirectory: $(workingDir)
+      displayName: "Hub Resources Terraform Init"
+      env:
+        ARM_CLIENT_ID: $(ARM_CLIENT_ID)
+        ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
+        ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
+        ARM_TENANT_ID: $(ARM_TENANT_ID)
+
+    - script: terraform plan -out=tfplan
+      workingDirectory: $(workingDir)
+      displayName: "Hub Resources Terraform Plan"
+      env:
+        ARM_CLIENT_ID: $(ARM_CLIENT_ID)
+        ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
+        ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
+        ARM_TENANT_ID: $(ARM_TENANT_ID)
+
+    - script: terraform apply -auto-approve tfplan
+      condition: eq('${{ parameters.plan_only }}', false)
+      workingDirectory: $(workingDir)
+      displayName: "Hub Resources Terraform Apply"
+      env:
+        ARM_CLIENT_ID: $(ARM_CLIENT_ID)
+        ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
+        ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
+        ARM_TENANT_ID: $(ARM_TENANT_ID)
+
+# ========================
+# 🔹 Firewall Rules
+# ========================
+- stage: Deploy_Firewall_Rules
+  condition: eq('${{ parameters.action }}', 'firewall_rules')
+  jobs:
+  - job: Deploy_Firewall_Rules
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+    - checkout: self
+
+    - task: TerraformInstaller@1
+      displayName: Install Terraform
+      inputs:
+        terraformVersion: '1.6.6'
+
+    - script: terraform init -reconfigure
+      workingDirectory: $(workingDir)
+      displayName: "Firewall Rules Terraform Init"
+      env:
+        ARM_CLIENT_ID: $(ARM_CLIENT_ID)
+        ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
+        ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
+        ARM_TENANT_ID: $(ARM_TENANT_ID)
+
+    - script: terraform plan -out=tfplan
+      workingDirectory: $(workingDir)
+      displayName: "Firewall Rules Terraform Plan"
+      env:
+        ARM_CLIENT_ID: $(ARM_CLIENT_ID)
+        ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
+        ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
+        ARM_TENANT_ID: $(ARM_TENANT_ID)
+
+    - script: terraform apply -auto-approve tfplan
+      condition: eq('${{ parameters.plan_only }}', false)
+      workingDirectory: $(workingDir)
+      displayName: "Firewall Rules Terraform Apply"
+      env:
+        ARM_CLIENT_ID: $(ARM_CLIENT_ID)
+        ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
+        ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
+        ARM_TENANT_ID: $(ARM_TENANT_ID)
+
+# ========================
+# 🔹 NSG Rules
+# ========================
+- stage: Deploy_NSG_Rules
+  condition: eq('${{ parameters.action }}', 'nsg_rules')
+  jobs:
+  - job: Deploy_NSG_Rules
+    pool:
+      vmImage: ubuntu-latest
+
+    steps:
+    - checkout: self
+
+    - task: TerraformInstaller@1
+      displayName: Install Terraform
+      inputs:
+        terraformVersion: '1.6.6'
+
+    - script: terraform init -reconfigure
+      workingDirectory: $(workingDir)
+      displayName: "NSG Terraform Init"
+      env:
+        ARM_CLIENT_ID: $(ARM_CLIENT_ID)
+        ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
+        ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
+        ARM_TENANT_ID: $(ARM_TENANT_ID)
+
+    - script: terraform plan -out=tfplan
+      workingDirectory: $(workingDir)
+      displayName: "NSG Terraform Plan"
+      env:
+        ARM_CLIENT_ID: $(ARM_CLIENT_ID)
+        ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
+        ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
+        ARM_TENANT_ID: $(ARM_TENANT_ID)
+
+    - script: terraform apply -auto-approve tfplan
+      condition: eq('${{ parameters.plan_only }}', false)
+      workingDirectory: $(workingDir)
+      displayName: "NSG Terraform Apply"
+      env:
+        ARM_CLIENT_ID: $(ARM_CLIENT_ID)
+        ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
+        ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
+        ARM_TENANT_ID: $(ARM_TENANT_ID)
+
+# ========================
+# 🔹 DNS
+# ========================
+- stage: Deploy_DNS_Records
+  condition: eq('${{ parameters.action }}', 'dns_entries')
+  jobs:
+  - job: Deploy_DNS_Records
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+    - checkout: self
+
+    - task: TerraformInstaller@1
+      displayName: Install Terraform
+      inputs:
+        terraformVersion: '1.6.6'
+
+    - script: terraform init -reconfigure
+      workingDirectory: $(workingDir)
+      displayName: "DNS Record Terraform Init"
+      env:
+        ARM_CLIENT_ID: $(ARM_CLIENT_ID)
+        ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
+        ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
+        ARM_TENANT_ID: $(ARM_TENANT_ID)
+
+    - script: terraform plan -out=tfplan
+      workingDirectory: $(workingDir)
+      displayName: "DNS Record Terraform Plan"
+      env:
+        ARM_CLIENT_ID: $(ARM_CLIENT_ID)
+        ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
+        ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
+        ARM_TENANT_ID: $(ARM_TENANT_ID)
+
+    - script: terraform apply -auto-approve tfplan
+      condition: eq('${{ parameters.plan_only }}', false)
+      workingDirectory: $(workingDir)
+      displayName: "DNS Record Terraform Apply"
+      env:
+        ARM_CLIENT_ID: $(ARM_CLIENT_ID)
+        ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
+        ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
+        ARM_TENANT_ID: $(ARM_TENANT_ID)

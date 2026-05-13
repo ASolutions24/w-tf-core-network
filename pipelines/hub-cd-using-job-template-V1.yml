@@ -1,0 +1,94 @@
+name: hub-$(Date:yyyyMMdd)$(Rev:.r)
+
+trigger: none
+
+parameters:
+- name: action
+  displayName: "Select Action"
+  type: string
+  default: core_resources
+  values:
+  - core_resources
+  - firewall_rules
+  - nsg_rules
+  - dns_entries
+
+- name: plan_only
+  displayName: "Plan Only"
+  type: boolean
+  default: true
+
+- name: variableGroup
+  displayName: "Variable Group"
+  type: string
+  default: "vg-dev"
+
+variables:
+- group: ${{ parameters.variableGroup }}
+- name: workingDir
+  ${{ if eq(parameters.action, 'core_resources') }}:
+    value: envs/hub/core-resources
+  ${{ if eq(parameters.action, 'firewall_rules') }}:
+    value: envs/hub/firewall-rules
+  ${{ if eq(parameters.action, 'nsg_rules') }}:
+    value: envs/hub/nsg-rules
+  ${{ if eq(parameters.action, 'dns_entries') }}:
+    value: envs/hub/dns-entries
+
+stages:
+
+# ========================
+# 🔹 Provision Hub Core
+# ========================
+- stage: Deploy_Hub_Core_Resources
+  condition: eq('${{ parameters.action }}', 'core_resources')
+  jobs:
+  - template: templates/template-tf-job-v1.yml
+    parameters:
+      jobName: Deploy_Hub_Core_Resources
+      workingDir: $(workingDir)
+      displayPrefix: 'Hub Resources'
+      terraformVersion: '1.6.6'
+      plan_only: ${{ parameters.plan_only }}
+
+# ========================
+# 🔹 Firewall Rules
+# ========================
+- stage: Deploy_Firewall_Rules
+  condition: eq('${{ parameters.action }}', 'firewall_rules')
+  jobs:
+  - template: templates/template-tf-job-v1.yml
+    parameters:
+      jobName: Deploy_Firewall_Rules
+      workingDir: $(workingDir)
+      displayPrefix: 'Firewall Rules'
+      terraformVersion: '1.6.6'
+      plan_only: ${{ parameters.plan_only }}
+
+# ========================
+# 🔹 NSG Rules
+# ========================
+- stage: Deploy_NSG_Rules
+  condition: eq('${{ parameters.action }}', 'nsg_rules')
+  jobs:
+  - template: templates/template-tf-job-v1.yml
+    parameters:
+      jobName: Deploy_NSG_Rules
+      workingDir: $(workingDir)
+      displayPrefix: 'NSG Rules'
+      terraformVersion: '1.6.6'
+      plan_only: ${{ parameters.plan_only }}
+
+# ========================
+# 🔹 DNS
+# ========================
+- stage: Deploy_DNS_Records
+  condition: eq('${{ parameters.action }}', 'dns_entries')
+  jobs:
+  - template: templates/template-tf-job-v1.yml
+    parameters:
+      jobName: Deploy_DNS_Records
+      workingDir: $(workingDir)
+      displayPrefix: 'DNS Records'
+      terraformVersion: '1.6.6'
+      plan_only: ${{ parameters.plan_only }}

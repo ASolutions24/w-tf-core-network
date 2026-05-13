@@ -1,0 +1,56 @@
+parameters:
+  - name: jobName
+    type: string
+  - name: workingDir
+    type: string
+  - name: displayPrefix
+    type: string
+  - name: terraformVersion
+    type: string
+    default: '1.6.6'
+  - name: plan_only
+    type: boolean
+    default: true
+
+jobs:
+- job: ${{ parameters.jobName }}
+  displayName: ${{ parameters.displayPrefix }}
+
+  pool:
+    vmImage: 'ubuntu-latest'
+
+  steps:
+    - checkout: self
+
+    - task: TerraformInstaller@1
+      displayName: 'Install Terraform'
+      inputs:
+        terraformVersion: ${{ parameters.terraformVersion }}
+
+    - script: terraform init -reconfigure
+      workingDirectory: ${{ parameters.workingDir }}
+      displayName: '${{ parameters.displayPrefix }} Terraform Init'
+      env:
+        ARM_CLIENT_ID: $(ARM_CLIENT_ID)
+        ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
+        ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
+        ARM_TENANT_ID: $(ARM_TENANT_ID)
+
+    - script: terraform plan -out=tfplan
+      workingDirectory: ${{ parameters.workingDir }}
+      displayName: '${{ parameters.displayPrefix }} Terraform Plan'
+      env:
+        ARM_CLIENT_ID: $(ARM_CLIENT_ID)
+        ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
+        ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
+        ARM_TENANT_ID: $(ARM_TENANT_ID)
+
+    - script: terraform apply -auto-approve tfplan
+      condition: and(succeeded(), ne('${{ parameters.plan_only }}', 'true'))
+      workingDirectory: ${{ parameters.workingDir }}
+      displayName: '${{ parameters.displayPrefix }} Terraform Apply'
+      env:
+        ARM_CLIENT_ID: $(ARM_CLIENT_ID)
+        ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
+        ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
+        ARM_TENANT_ID: $(ARM_TENANT_ID)

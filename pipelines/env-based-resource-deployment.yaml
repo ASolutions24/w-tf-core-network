@@ -1,0 +1,70 @@
+# yaml-language-server: $schema=https://www.schemastore.org/any.json
+
+name: cd-$(Date:yyyyMMdd)$(Rev:.r)
+
+trigger: none
+
+parameters:
+- name: environment
+  displayName: "Select Environment"
+  type: string
+  default: dev
+  values:
+  - dev
+  - tst
+  - prod
+
+- name: action
+  displayName: "Execution Mode"
+  type: string
+  default: plan
+  values:
+  - plan
+  - apply
+
+- name: gitTag
+  displayName: "Git Tag Version (e.g. v2026.04.23.123)"
+  type: string
+  default: ""
+
+variables:
+- group: vg-${{ parameters.environment }}
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+stages:
+
+- stage: Deploy
+  displayName: "Deploy to ${{ parameters.environment }}"
+  jobs:
+  - template: templates/template-tf-job-v2.yml
+    parameters:
+      jobName: Terraform_${{ parameters.environment }}
+      workingDir: envs/${{ parameters.environment }}
+      #displayPrefix: '${{ parameters.environment | upper }} Deployment'
+      displayPrefix: '${{ parameters.environment }} Deployment'
+      terraformVersion: '1.6.6'
+
+      # 🔥 convert action → plan_only
+      plan_only: ${{ eq(parameters.action, 'plan') }}
+
+      # 🔥 pass git tag
+      gitTag: ${{ parameters.gitTag }}
+    #######################################################################################################################
+    # Add this block if interested in forcasting resource deployment cost prior to deploy. This may require registering and
+    # connecting repo env with service principal with https://dashboard.infracost.io/ and use API Key. 
+    #
+    #    - script: |
+    #        curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh
+    #        infracost breakdown --path envs/${{ parameters.environment }} \
+    #          --format table \
+    #          --out-file infracost.txt
+    #      displayName: "Run Infracost"
+    #      env:
+    #        INFRACOST_API_KEY: $(INFRACOST_API_KEY)
+    #        ARM_CLIENT_ID: $(ARM_CLIENT_ID)
+    #        ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
+    #        ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
+    #        ARM_TENANT_ID: $(ARM_TENANT_ID)
+    ########################################################################################################################

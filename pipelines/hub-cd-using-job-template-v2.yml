@@ -1,0 +1,121 @@
+name: hub-$(Date:yyyyMMdd)$(Rev:.r)
+
+trigger: none
+
+parameters:
+- name: action
+  displayName: "Select Action"
+  type: string
+  default: core_resources
+  values:
+  - core_resources
+  - firewall_rules
+  - nsg_rules
+  - dns_entries
+  - monitoring
+
+- name: plan_only
+  displayName: "Plan Only"
+  type: boolean
+  default: true
+
+- name: gitTag
+  displayName: "Git Tag Version (e.g. v2026.04.23.123)"
+  type: string
+  default: ""
+
+- name: variableGroup
+  displayName: "Variable Group"
+  type: string
+  default: "vg-hub"
+
+variables:
+- group: ${{ parameters.variableGroup }}
+- name: workingDir
+  ${{ if eq(parameters.action, 'core_resources') }}:
+    value: envs/hub/core-resources
+  ${{ if eq(parameters.action, 'firewall_rules') }}:
+    value: envs/hub/firewall-rules
+  ${{ if eq(parameters.action, 'nsg_rules') }}:
+    value: envs/hub/nsg-rules
+  ${{ if eq(parameters.action, 'dns_entries') }}:
+    value: envs/hub/dns-entries
+  ${{ if eq(parameters.action, 'monitoring') }}:
+    value: envs/hub/monitoring
+
+stages:
+
+# ========================
+# 🔹 Provision Hub Core
+# ========================
+- stage: Deploy_Hub_Core_Resources
+  condition: eq('${{ parameters.action }}', 'core_resources')
+  jobs:
+  - template: templates/template-tf-job-v2.yml
+    parameters:
+      jobName: Deploy_Hub_Core_Resources
+      workingDir: $(workingDir)
+      displayPrefix: 'Hub Resources'
+      terraformVersion: '1.6.6'
+      plan_only: ${{ parameters.plan_only }}
+      gitTag: ${{ parameters.gitTag }}
+
+# ========================
+# 🔹 Firewall Rules
+# ========================
+- stage: Deploy_Firewall_Rules
+  condition: eq('${{ parameters.action }}', 'firewall_rules')
+  jobs:
+  - template: templates/template-tf-job-v2.yml
+    parameters:
+      jobName: Deploy_Firewall_Rules
+      workingDir: $(workingDir)
+      displayPrefix: 'Firewall Rules'
+      terraformVersion: '1.6.6'
+      plan_only: ${{ parameters.plan_only }}
+      gitTag: ${{ parameters.gitTag }}
+
+# ========================
+# 🔹 NSG Rules
+# ========================
+- stage: Deploy_NSG_Rules
+  condition: eq('${{ parameters.action }}', 'nsg_rules')
+  jobs:
+  - template: templates/template-tf-job-v2.yml
+    parameters:
+      jobName: Deploy_NSG_Rules
+      workingDir: $(workingDir)
+      displayPrefix: 'NSG Rules'
+      terraformVersion: '1.6.6'
+      plan_only: ${{ parameters.plan_only }}
+      gitTag: ${{ parameters.gitTag }}
+
+# ========================
+# 🔹 DNS
+# ========================
+- stage: Deploy_DNS_Records
+  condition: eq('${{ parameters.action }}', 'dns_entries')
+  jobs:
+  - template: templates/template-tf-job-v2.yml
+    parameters:
+      jobName: Deploy_DNS_Records
+      workingDir: $(workingDir)
+      displayPrefix: 'DNS Records'
+      terraformVersion: '1.6.6'
+      plan_only: ${{ parameters.plan_only }}
+      gitTag: ${{ parameters.gitTag }}
+
+# ========================
+# 🔹 Hub Monitoring
+# ========================
+- stage: Deploy_Hub_Monitoring
+  condition: eq('${{ parameters.action }}', 'monitoring')
+  jobs:
+  - template: templates/template-tf-job-v2.yml
+    parameters:
+      jobName: Deploy_Hub_Monitoring
+      workingDir: $(workingDir)
+      displayPrefix: 'Hub Monitoring'
+      terraformVersion: '1.6.6'
+      plan_only: ${{ parameters.plan_only }}
+      gitTag: ${{ parameters.gitTag }}

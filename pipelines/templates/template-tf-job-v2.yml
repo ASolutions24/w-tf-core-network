@@ -1,0 +1,65 @@
+parameters:
+  - name: jobName
+    type: string
+  - name: workingDir
+    type: string
+  - name: displayPrefix
+    type: string
+  - name: terraformVersion
+    type: string
+    default: '1.6.6'
+  - name: plan_only
+    type: boolean
+    default: true
+  - name: gitTag
+    type: string
+
+jobs:
+- job: ${{ parameters.jobName }}
+  displayName: ${{ parameters.displayPrefix }}
+
+  pool:
+    vmImage: 'ubuntu-latest'
+
+  steps:
+    - checkout: self
+
+    - script: |
+        if [ -n "${{ parameters.gitTag }}" ]; then
+          echo "Checking out tag ${{ parameters.gitTag }}"
+          git fetch --tags
+          git checkout tags/${{ parameters.gitTag }}
+        fi
+      displayName: "Checkout Tag"
+
+    - task: TerraformInstaller@1
+      displayName: 'Install Terraform'
+      inputs:
+        terraformVersion: ${{ parameters.terraformVersion }}
+
+    - script: |
+        echo "🔐 Setting Azure authentication environment variables..."
+
+        export ARM_CLIENT_ID=$(ARM_CLIENT_ID)
+        export ARM_CLIENT_SECRET=$(ARM_CLIENT_SECRET)
+        export ARM_SUBSCRIPTION_ID=$(ARM_SUBSCRIPTION_ID)
+        export ARM_TENANT_ID=$(ARM_TENANT_ID)
+
+        echo "📁 Changing directory to ${{ parameters.workingDir }}"
+        cd ${{ parameters.workingDir }}
+
+        echo "🚀 Running Terraform Init"
+        terraform init -reconfigure
+
+        echo "📋 Running Terraform Plan"
+        terraform plan -out=tfplan
+
+        PLAN_ONLY=$(echo "${{ parameters.plan_only }}" | tr '[:upper:]' '[:lower:]')
+
+        if [ "$PLAN_ONLY" = "false" ]; then
+          echo "⚡ Running Terraform Apply"
+          terraform apply -auto-approve tfplan
+        else
+          echo "⏭️ Skipping Apply (plan_only = true)"
+        fi
+      displayName: '${{ parameters.displayPrefix }} TF Execution'
